@@ -1,0 +1,32 @@
+[project]
+name = "vigill-sdk"
+version = "0.1.0"
+description = "Plain-English production error monitoring for Python apps — the Vigil SDK."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = []   # standard library only, by design
+license = { text = "MIT" }
+authors = [{ name = "Rajeev Chourey" }]
+keywords = ["error-monitoring", "error-tracking", "observability", "vigil"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Bug Tracking",
+    "Topic :: System :: Monitoring",
+]
+
+[project.urls]
+Homepage = "https://vigill.dev"
+Repository = "https://github.com/vigill-dev/vigil-python"
+Issues = "https://github.com/vigill-dev/vigil-python/issues"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["vigil*"]

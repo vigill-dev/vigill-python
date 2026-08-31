@@ -1,0 +1,24 @@
+# Test on every push and PR, across the range pyproject.toml claims to support.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # requires-python is >=3.8; test the ends of that promise, not just one version.
+        python-version: ['3.9', '3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      # The SDK is standard-library only by design, so there is nothing to install and
+      # unittest is enough — adding pytest would mean adding the first dependency.
+      - run: python -m unittest discover -p 'test_*.py' -v

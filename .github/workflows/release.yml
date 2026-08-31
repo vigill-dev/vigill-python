@@ -1,0 +1,56 @@
+# Publish to PyPI on a version tag, via Trusted Publishing (OIDC). No API token exists.
+#
+#   git tag v0.1.0 && git push --tags
+#
+# Requires a publisher registered at pypi.org → Publishing:
+#   owner vigill-dev · repo vigil-python · workflow release.yml · environment pypi
+# A "pending" publisher may be registered before the project exists, which is how the very
+# first release gets out without a token.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m unittest discover -p 'test_*.py' -v
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    # The environment name must match the trusted publisher registered on PyPI.
+    environment: pypi
+    permissions:
+      id-token: write   # mints the OIDC token PyPI trades for a short-lived upload token
+      contents: write   # cut the GitHub Release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Tag must match pyproject.toml
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG="$(python -c "import tomllib;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::tag v$TAG does not match pyproject.toml $PKG"
+            exit 1
+          fi
+          echo "publishing $PKG"
+
+      - run: python -m pip install --upgrade build
+      - run: python -m build
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true

@@ -20,8 +20,8 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://vigill.dev"
-Repository = "https://github.com/vigill-dev/vigil-python"
-Issues = "https://github.com/vigill-dev/vigil-python/issues"
+Repository = "https://github.com/vigill-dev/vigill-python"
+Issues = "https://github.com/vigill-dev/vigill-python/issues"
 
 [build-system]
 requires = ["setuptools>=61"]
